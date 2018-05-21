@@ -1,0 +1,1 @@
+ozip functionality mimics gzip.
