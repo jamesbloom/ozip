@@ -132,6 +132,7 @@ bool g_verify = false;
 
 bool g_printedhelp = false;
 bool g_cleanonexit = false;
+bool g_f2f = false;
 
 //Prints to log on windows
 void logprintf(const char * _Format, ...)
@@ -1152,7 +1153,7 @@ bool got_bytes_to_compress(U32  &bytesread, U32 &rawbufsize, char * &rawbufbase,
 	{
 		if ((dataoffset + bytesread) == rawbufsize)
 		{
-			if (!g_bequiet) fprintf(stderr, ".");
+			if (!g_bequiet && g_f2f) fprintf(stderr, ".");
 
 			if (rawbufsize < g_rawbufferlimit)
 			{
@@ -1287,7 +1288,7 @@ bool compress(U64 filesize)
 	U64 totalrawsize = 0;
 	U64 totalcompsize = 0;
 	if (g_beverbose)fprintf(stderr, "OZIP: Compressing with compressor=%i, level=%i, rawbufferlimit=%iKB, blocksize=%iKB\n", g_compressor, g_level, g_rawbufferlimit / 1024, g_blocklimit / 1024);
-	else if (!g_bequiet) fprintf(stderr, "OZIP: Compressing %s\nOZIP:...",g_infilename ? g_infilename : "");
+	else if (!g_bequiet && g_f2f) fprintf(stderr, "OZIP: Compressing %s\nOZIP:...",g_infilename ? g_infilename : "");
 	logprintf("compress() start for %s\n",g_infilename);
 	logprintf("Using compressor=%i, level=%i\n", g_compressor,g_level);
 	//streamheader
@@ -1322,7 +1323,7 @@ bool compress(U64 filesize)
 			//raw,context,compsize.
 			if (!g_bequiet && g_beverbose)fprintf(stderr, "OZIP:uncompresesd block size = %u\n", bytesread);
 			if (!g_bequiet && g_beverbose)fprintf(stderr, "OZIP:Compressed block size = %u\n", compsize);
-			if (!g_bequiet && !g_beverbose)fprintf(stderr, ".");
+			if (!g_bequiet && !g_beverbose && g_f2f)fprintf(stderr, ".");
 			totalrawsize += bytesread;
 			totalcompsize += compsize;
 			put_block_header(bytesread, contextsize, compsize);
@@ -1396,7 +1397,7 @@ void ensure_buffer(char* &rawbuffer, U32 &rawbufsize, U32 contextsize, U32 rawsi
 bool decompress(FILE * verifyagainst = NULL)
 {
 	if (!g_bequiet && g_testfile) fprintf(stderr, "OZIP:Testing file contents of %s...\n", g_infilename);
-	if (!g_bequiet && !g_verify) fprintf(stderr, "OZIP: Decompressing %s \n",g_infilename ? g_infilename : "");
+	if (!g_bequiet && !g_verify && g_f2f) fprintf(stderr, "OZIP: Decompressing %s \n",g_infilename ? g_infilename : "");
 	logprintf(" decompress() start for %s\n",g_infilename);
 	U32 rawbufsize = 0;
 	char * rawbuffer = NULL;
@@ -1691,6 +1692,7 @@ bool handle_file(char * infilecandidate)
 					return false;
 				}
 			}
+			g_f2f = true;
 			success = handle_p2p(infilesize);
 			if (!g_testfile)
 			{
