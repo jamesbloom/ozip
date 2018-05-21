@@ -1,1 +1,1 @@
-ozip functionality mimics gzip.
+ozip functionality mimics gzip/bzip2.
