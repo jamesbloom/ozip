@@ -1,6 +1,8 @@
 OZIP ver. 0.0.7
 
-ozip functionality mimics gzip/bzip2.
+Ozip is a simple compression utility utilizing the Oodle Compression Libaries. 
+Ozip requires a licensed Oodle SDK.
+Ozip functionality mimics gzip/bzip2.
 
 usage:
 ozip [file] [opts]             (compresses)
@@ -43,5 +45,13 @@ Full Options:
 
 Unix only:
 		--timeout=[1000]		time in ms to wait on inactve stdin during compression
+		
+		
+		
+Ozip developed by:
+https://github.com/jamesbloom/ozip
+jamesbloom@gmail.com
     
+About the Oodle SDK:
+http://www.radgametools.com/oodle.htm
     
