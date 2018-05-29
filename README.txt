@@ -22,9 +22,9 @@ compress\or selection: --kraken -mk
                        
 level:   -1 -2 ... -8...
 
-Full Options:
-    -H                      prints Oodle compressor options help
-		-c --stdout	            outputs to stdout (decompress only). 
+Options:
+    		-H                      prints Oodle compressor options help
+		-c --stdout	        outputs to stdout (decompress only). 
 		-d --decompress         decompress
 		-z --compress           compress
 		-k --keep               keep original file (otherwise deleted)
@@ -42,11 +42,11 @@ Full Options:
 		--bufferlimit=[1-256]   (MB) max buffer size for compression.
 		--blocklimit=[8+]       (KB) minimum block size in KB for streaming
 		--contextlimit=[8+]     (KB) context limit KB. trades memory use for ratio
-
 Unix only:
 		--timeout=[1000]		time in ms to wait on inactve stdin during compression
 		
-		
+
+Additional Oodle Compression options displayed with -H. See the Oodle Data Documentation for details.
 		
 Ozip developed by:
 https://github.com/jamesbloom/ozip
