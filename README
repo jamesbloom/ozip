@@ -4,7 +4,8 @@ Ozip is a simple compression utility utilizing the Oodle Compression Libaries.
 Ozip requires a licensed Oodle SDK.
 Ozip functionality mimics gzip/bzip2.
 
-usage:
+usage:  
+
 ozip [file] [opts]             (compresses)
 ozip [file] [-d opts]          (decompress)
 
