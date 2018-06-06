@@ -22,7 +22,7 @@ compressor selection:
                        --leviathan -ml  
                        --selkie -ms  
                        --mermaid -mm  
-		       --hydra -mh
+		       --hydra -mh  
 *Kraken provides a balance of ratio and speed. 
 Leviathan provides maximum compression.  
 Selkie and Mermaid are even faster.                    
