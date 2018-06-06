@@ -22,7 +22,14 @@ compressor selection:
                        --leviathan -ml  
                        --selkie -ms  
                        --mermaid -mm  
-                       
+		       --hydra -mh
+*Kraken provides a balance of ratio and speed. 
+Leviathan provides maximum compression.  
+Selkie and Mermaid are even faster.                    
+Hydra can hit performance targets between those choices.  
+For more info see http://www.radgametools.com/oodlecompressors.htm*  
+
+		       
 compression effort level:   -1 -2 ... -8...  
 *Higher effort levels get a better compression ratio at the expense of encode time*
 
