@@ -8,9 +8,9 @@ Like gzip, Ozip supports streaming compression/decompression from stdin to stdou
 ozip [file] [opts]             (compresses)  
 ozip [file] [-d opts]          (decompress)  
 
-*without file args ozip defaults to stdin/stdout compression.  
-*uses .ooz extension for compressed files.  
-*(!)Deletes input files unless -k --keep opt is used (as does gzip).  
+* without file args ozip defaults to stdin/stdout compression.  
+* uses .ooz extension for compressed files.  
+* (!)Deletes input files unless -k --keep opt is used (as does gzip).  
 
 Default compression settings are Oodle Kraken at Compression Level Normal (4).  
 
