@@ -1,6 +1,7 @@
 # OZIP
 **Ozip** is a simple compression utility utilizing the Oodle high performance compression library.  Ozip's functionality mimics gzip; most invocations function identically.  
 Like gzip, Ozip supports streaming compression/decompression from stdin to stdout.  
+Ozip requires the Oodle SDK.
 
 
 # Usage    
@@ -15,7 +16,8 @@ ozip [file] [-d opts]          (decompress)
 Default compression settings are Oodle Kraken at Compression Level Normal (4).  
 
 # Settings  
-compressor selection: --kraken -mk  
+compressor selection:  
+                       --kraken -mk  
                        --leviathan -ml
                        --selkie -ms  
                        --mermaid -mm  
