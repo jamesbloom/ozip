@@ -12,7 +12,7 @@ ozip [file] [-d opts]          (decompress)
 * without file args ozip defaults to stdin/stdout compression.  
 * uses .ooz extension for compressed files.  
 * (!)Deletes input files unless -k --keep opt is used (as does gzip).  
-* Ozip iterates on multiple file targets. To combine files, compose with tar (e.g. tar <files> | ozip > "archivedfiles.tar.ooz"
+* Ozip iterates on multiple file targets. To combine files, compose with tar (e.g. tar <files> | ozip > "archivedfiles.tar.ooz")
 
 Default compression settings are Oodle Kraken at Compression Level Normal (4).  
 
