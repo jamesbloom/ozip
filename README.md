@@ -1,6 +1,6 @@
 # OZIP
 **Ozip** is a simple compression utility utilizing the Oodle high performance compression library.  Ozip's functionality mimics gzip; most invocations function identically.  
-Like gzip, Ozip supports streaming compression/decompression from stdin/stdout.  
+Like gzip, Ozip supports streaming compression/decompression from stdin to stdout.  
 
 
 # Usage    
