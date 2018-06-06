@@ -19,7 +19,7 @@ Default compression settings are Oodle Kraken at Compression Level Normal (4).
 # Settings  
 compressor selection:  
                        --kraken -mk  
-                       --leviathan -ml
+                       --leviathan -ml  
                        --selkie -ms  
                        --mermaid -mm  
                        
