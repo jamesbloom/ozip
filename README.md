@@ -1,8 +1,8 @@
 # OZIP
 **Ozip** is a simple compression utility utilizing the Oodle high performance compression library.  Ozip's functionality mimics gzip; most invocations function identically.  
 Like gzip, Ozip supports streaming compression/decompression from stdin to stdout.  
-Ozip requires the Oodle SDK.
-
+Ozip requires the Oodle SDK.  
+Supports Windows, Linux and Mac.  
 
 # Usage    
 
@@ -12,6 +12,7 @@ ozip [file] [-d opts]          (decompress)
 * without file args ozip defaults to stdin/stdout compression.  
 * uses .ooz extension for compressed files.  
 * (!)Deletes input files unless -k --keep opt is used (as does gzip).  
+* Ozip iterates on multiple file targets. To combine files, compose with tar (e.g. tar <files> | ozip > "archivedfiles.tar.ooz"
 
 Default compression settings are Oodle Kraken at Compression Level Normal (4).  
 
