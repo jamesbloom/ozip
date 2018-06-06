@@ -15,12 +15,13 @@ ozip [file] [-d opts]          (decompress)
 Default compression settings are Oodle Kraken at Compression Level Normal (4).  
 
 # Settings  
-compress\or selection: --kraken -mk  
+compressor selection: --kraken -mk  
                        --leviathan -ml
                        --selkie -ms  
                        --mermaid -mm  
                        
-level:   -1 -2 ... -8...  
+compression effort level:   -1 -2 ... -8...  
+*Higher effort levels get a better compression ratio at the expense of encode time 
 
 Options:  
     		-H                      prints Oodle compressor options help  
