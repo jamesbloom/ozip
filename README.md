@@ -47,7 +47,7 @@ Options:
 		--blocklimit=[8+]       (KB) minimum block size in KB for streaming   
 		--contextlimit=[8+]     (KB) context limit KB. trades memory use for ratio   
 Unix only:   
-		--timeout=[1000]		time in ms to wait on inactve stdin during compression   
+		--timeout=[1000]         time in ms to wait on inactve stdin during compression   
 		
 
 Additional Oodle Compression options displayed with -H. See the Oodle Data Documentation for details.   
