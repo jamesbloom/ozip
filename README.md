@@ -23,8 +23,8 @@ compressor selection:
                        --selkie -ms  
                        --mermaid -mm  
 		       --hydra -mh  
-*Kraken provides a balance of ratio and speed. 
-Leviathan provides maximum compression.  
+*Kraken provides a balance of ratio and speed.   
+Leviathan provides maximum compression.    
 Selkie and Mermaid are even faster.                    
 Hydra can hit performance targets between those choices.  
 For more info see http://www.radgametools.com/oodlecompressors.htm*  
