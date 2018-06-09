@@ -1,9 +1,6 @@
 # OZIP
-**Ozip** is a simple compression utility utilizing the Oodle high performance compression library.  Ozip's functionality mimics gzip; most invocations function identically.  
-Like gzip, Ozip supports streaming compression/decompression from stdin to stdout.  
+**Ozip** is a simple compression utility utilizing the Oodle high performance compression library.  Ozip's functionality mimics gzip; most invocations function identically. Like gzip, Ozip supports streaming compression/decompression from stdin to stdout. Builds on Windows, Linux and Mac.  
 Ozip requires the Oodle SDK.  
-Supports Windows, Linux and Mac.  
-
 # Usage    
 
 ozip [file] [opts]             (compresses)  
@@ -35,30 +32,36 @@ compression effort level:
 *Higher effort levels get a better compression ratio at the expense of encode time*
 
 Options:  
-     		-H                      prints Oodle compressor options help  
- 		-c --stdout	        outputs to stdout (decompress only).   
- 		-d --decompress         decompress  
- 		-z --compress           compress
- 		-k --keep               keep original file (otherwise deleted)    
-  		-f --force              overwrite output file if exists   
- 		-F --fast               low latency streaming compression  
- 		-b --best               best compression. Long compress times.   
- 		-t --test               tests existing compressed file validity   
- 		-K --verify             verify file during compression    
- 		-q --quiet              no prints    
- 		-v --verbose            prints lots   
- 		-s --small              low memory use ~2.5MB  (compression only)   
- 		-(1-9)	                compression level 1-9   
- 		-m[k] --compressor=[k]  [k/l/m/s] Oodle compressor selection   
- 		--kraken --mermaid --selkie --leviathan     Oodle compressor choice   
- 		--bufferlimit=[1-256]   (MB) max buffer size for compression.   
- 		--blocklimit=[8+]       (KB) minimum block size in KB for streaming   
-  		--contextlimit=[8+]     (KB) context limit KB. trades memory use for ratio   
+     		-H                      *prints Oodle compressor options help  *
+ 		-c --stdout	        *outputs to stdout (decompress only). *  
+ 		-d --decompress         *decompress * 
+ 		-z --compress           *compress*
+ 		-k --keep               *keep original file (otherwise deleted)*    
+  		-f --force              *overwrite output file if exists   *
+ 		-F --fast               *low latency streaming compression  *
+ 		-b --best               *best compression. Long compress times.   *
+ 		-t --test               *tests existing compressed file validity *  
+ 		-K --verify             *verify file during compression *   
+ 		-q --quiet              *no prints    *
+ 		-v --verbose            *prints lots   *
+ 		-s --small              *low memory use ~2.5MB  (compression only)  * 
+ 		-(1-9)	                *compression level 1-9   *
+ 		-m[k] --compressor=[k]  *[k/l/m/s] Oodle compressor selection   *
+ 		--kraken --mermaid --selkie --leviathan     *Oodle compressor choice *  
+ 		--bufferlimit=[1-256]   *(MB) max buffer size for compression.   *
+ 		--blocklimit=[8+]       *(KB) minimum block size in KB for streaming   *
+  		--contextlimit=[8+]     *(KB) context limit KB. trades memory use for ratio  * 
 Unix only:   
- 		--timeout=[1000]         time in ms to wait on inactve stdin during compression   
+ 		--timeout=[1000]         *time in ms to wait on inactve stdin during compression   *
 		
 
 Additional Oodle Compression options displayed with -H. See the Oodle Data Documentation for details.   
+
+# Headers 
+
+Ozip adds a file header and block header to compressed data stream. Values are little endian.
+File Header Version 1:   16 bytes.    4 byte "OZIP" magic word. 4 byte Header Version. 8 byte filesize (if known.)
+Block Header Version 1:  16 bytes.    4 byte "OZIP" magic word. 4 bytes raw block size. 4 bytes context size. 4 bytes compressed size.
 
 # About   
 OZIP ver. 0.0.7   
