@@ -15,7 +15,7 @@
 #include "oodle2.h"
 #include <fcntl.h>
 
-#define OZIP_VER "0.0.7"
+#define OZIP_VER "0.0.8"
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 # define PLATFORM_UNIX
@@ -94,6 +94,10 @@ char logfilename[] = "c:\\test\\OZIP.log";
 #define MAX_PATH 260
 #endif
 
+#ifndef OodleLZ_CompressionLevel_Min
+#define OodleLZ_CompressionLevel_Min 0
+#endif
+
 #define HEADER_V1 601
 #define DEFAULT_COMPRESSOR OodleLZ_Compressor_Kraken
 #define DEFAULT_LEVEL OodleLZ_CompressionLevel_Normal
@@ -103,7 +107,7 @@ static const U32 g_headerversion = HEADER_V1;
 //default compression settings
 int g_scratchmemsize = 512 * 1024;
 void * g_scratchmemory = NULL;
-U32 g_level = DEFAULT_LEVEL;
+int g_level = DEFAULT_LEVEL;
 OodleLZ_Compressor g_compressor = DEFAULT_COMPRESSOR;
 U32 g_rawbufferlimit = 64 * 1024 * 1024;
 U32 g_blocklimit = 512 * 1024;                    //min bytes of data to trigger a compress while waiting on stream
@@ -753,9 +757,9 @@ void set_compressor(char * valuepoint)
 void set_level(char inchar)
 {
 	int parsedlevel = inchar - '0';
-	if (parsedlevel < 0 || parsedlevel > 8)
+	if (parsedlevel < OodleLZ_CompressionLevel_Min || parsedlevel > OodleLZ_CompressionLevel_Max)
 	{
-		if (!g_bequiet) fprintf(stderr, "OZIP: invalid arg - compressor level only valid in [0-8].\n");
+		if (!g_bequiet) fprintf(stderr, "OZIP: invalid arg - compressor level only valid in [%i , $i].\n",OodleLZ_CompressionLevel_Min, OodleLZ_CompressionLevel_Max);
 	}
 	else
 	{
@@ -946,6 +950,23 @@ void parse_opt(int argc, char * *const argv)
 				{
 					g_verify = true;
 				}
+				//new negative compression levels
+				if (strcmp(option, "1") == 0)
+				{
+					g_level = -1;
+				}
+				if (strcmp(option, "2") == 0)
+				{
+					g_level = -2;
+				}
+				if (strcmp(option, "3") == 0)
+				{
+					g_level = -3;
+				}
+				if (strcmp(option, "4") == 0)
+				{
+					g_level = -4;
+				}
 				char * valpoint;
 				if ((valpoint = compare_end(option,"bufferlimit=")) != NULL)
 				{
@@ -1005,6 +1026,11 @@ void parse_opt(int argc, char * *const argv)
 	{
 		if (!g_bequiet) fprintf(stderr, "OZIP: got decompress and verify flags. ignoring verify.\n");
 		g_verify = false;
+	}
+	if (g_level < OodleLZ_CompressionLevel_Min || g_level > OodleLZ_CompressionLevel_Max)
+	{
+		if (!g_bequiet) fprintf(stderr, "OZIP: invalid arg - compressor level only valid in [%i , $i].\n", OodleLZ_CompressionLevel_Min, OodleLZ_CompressionLevel_Max);
+		g_level = DEFAULT_LEVEL;
 	}
 	g_beverbose &= !g_bequiet;
 }
@@ -1877,6 +1903,8 @@ int main(int argc, char * argv[])
 }
 
 
+
+//internal build system
 /*
 @cdep pre
 
