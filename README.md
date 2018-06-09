@@ -31,9 +31,9 @@ compression effort level:
           -1 -2  ...  -8  
 *Higher effort levels get a better compression ratio at the expense of encode time*
 
-More Options:  
-
-     	        -H                     
+More Options  
+  
+                -H                     
 		*prints Oodle compressor options help*  
  		-c --stdout	        
 		*outputs to stdout (decompress only).*    
