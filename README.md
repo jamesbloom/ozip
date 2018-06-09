@@ -33,7 +33,7 @@ compression effort level:
 
 More Options:  
 
-     		-H                     
+     	        -H                     
 		*prints Oodle compressor options help*  
  		-c --stdout	        
 		*outputs to stdout (decompress only).*    
