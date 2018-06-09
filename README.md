@@ -79,9 +79,17 @@ Additional Oodle Compression options displayed with -H. See the Oodle Data Docum
 
 # Headers 
 
-Ozip adds a file header and block header to compressed data stream. Values are little endian.
-File Header Version 1:   16 bytes.    4 byte "OZIP" magic word. 4 byte Header Version. 8 byte filesize (if known.)
-Block Header Version 1:  16 bytes.    4 byte "OZIP" magic word. 4 bytes raw block size. 4 bytes context size. 4 bytes compressed size.
+Ozip adds a file header and block header to compressed data stream. Values are little endian.  
+File Header Version 1:   16 bytes.      
+4 byte "OZIP" magic word.  
+4 byte Header Version.   
+8 byte filesize (=0 if unknown.)   
+
+Block Header Version 1:  16 bytes.    
+4 byte "OZIP" magic word.  
+4 bytes raw block size.  
+4 bytes context size.  
+4 bytes compressed size.  
 
 # About   
 OZIP ver. 0.0.7   
