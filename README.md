@@ -32,16 +32,16 @@ compression effort level:
 *Higher effort levels get a better compression ratio at the expense of encode time*
 
 Options:  
-     		-H                      * prints Oodle compressor options help  *  
- 		-c --stdout	        * outputs to stdout (decompress only). *    
- 		-d --decompress         * decompress *   
+     		-H                      *prints Oodle compressor options help*  
+ 		-c --stdout	        *outputs to stdout (decompress only).*    
+ 		-d --decompress         *decompress*   
  		-z --compress           *compress*  
  		-k --keep               *keep original file (otherwise deleted)*      
-  		-f --force              *overwrite output file if exists   *  
- 		-F --fast               *low latency streaming compression  *  
- 		-b --best               *best compression. Long compress times.   *  
- 		-t --test               *tests existing compressed file validity *    
- 		-K --verify             *verify file during compression *     
+  		-f --force              *overwrite output file if exists *  
+ 		-F --fast               *low latency streaming compression*  
+ 		-b --best               *best compression. Long compress times.*  
+ 		-t --test               *tests existing compressed file validity*    
+ 		-K --verify             *verify file during compression*     
  		-q --quiet              *no prints    *  
  		-v --verbose            *prints lots   *  
  		-s --small              *low memory use ~2.5MB  (compression only)  *   
