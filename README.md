@@ -77,7 +77,7 @@ Unix only:
 
 Additional Oodle Compression options displayed with -H. See the Oodle Data Documentation for details.   
 
-#Streaming 
+# Streaming 
 
 Ozip supports nonblocking stream on linux, otherwise reading for EOF. Setting a smaller blocklimit represents less tolerance for timeouts, triggering a blockwise encoding with less received data. Lower latency can also be achieved by setting smaller max buffer size at the cost of compression ratio (this also lowers memory use)
 
