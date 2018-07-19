@@ -1135,7 +1135,7 @@ void put_block_header(U32 bytesread, U32 contextsize, U32 compsize)
 	ozip_write32(compsize);
 }
 
-//Reads header from g_istream {magicword, rawsize, contextsize, compresssedsize}
+//Reads block header from g_istream {magicword, rawsize, contextsize, compresssedsize}
 //Returns true only for complete headers.
 bool get_block_header(U32 &rawsize, U32  &contextsize, U32  &compsize)
 {
@@ -1807,6 +1807,7 @@ void register_signal_handlers()
 bool iterate_on_file_args(int argc, char * argv[])
 {
 	bool didsomething = false;
+	bool foundgoodfile = false;
 	for (int i = 1; i < argc; i++)
 	{
 		if (argv[i][0] != '-')
@@ -1819,37 +1820,32 @@ bool iterate_on_file_args(int argc, char * argv[])
 			if (strchr(argv[i], '*'))
 			{
 				typedef struct wg_infilename { char x[MAX_PATH]; } wg_infilename;
-				wg_infilename * filestohandle;
-				filestohandle = (wg_infilename*)calloc(100 * MAX_PATH, 1);
-				int fileindex = 0;
+				wg_infilename  filetoprocess;
+				//filestohandle = (wg_infilename*)calloc(100 * MAX_PATH, 1);
+				//int fileindex = 0;
 				HANDLE filehandle;
 				WIN32_FIND_DATAA filedata;
 				filehandle = FindFirstFileA(argv[i], &filedata);
 				if (filehandle != INVALID_HANDLE_VALUE)
 				{
 					do {
-						strncpy(filestohandle[fileindex].x, argv[i],MAX_PATH);
-						char * p = strrchr(filestohandle[fileindex].x, '\\');
+						strncpy(filetoprocess.x, argv[i],MAX_PATH);
+						char * p = strrchr(filetoprocess.x, '\\');
 						if (p)
 						{
 							p[1] = 0;
-							strncat(filestohandle[fileindex].x, filedata.cFileName,MAX_PATH - strlen(filestohandle[fileindex].x)); //if filename is c
+							strncat(filetoprocess.x, filedata.cFileName,MAX_PATH - strlen(filetoprocess.x)); 
 						}
 						else
 						{
-							strncpy(filestohandle[fileindex].x, filedata.cFileName, MAX_PATH);
+							strncpy(filetoprocess.x, filedata.cFileName, MAX_PATH);
 						}
-						fileindex++;
-					} while (FindNextFileA(filehandle, &filedata) && fileindex < 100);
-
-					//handle expanded files.
-					for (int j = 0; j < fileindex; j++)
-					{
+						//fileindex++;
 						g_cleanonexit = false;
-						handle_file(filestohandle[j].x);
-					}
+						foundgoodfile = handle_file(filetoprocess.x);
+					} while (FindNextFileA(filehandle, &filedata));
 				}
-				if (fileindex == 0)
+				if (!foundgoodfile)
 				{
 					if (!g_bequiet) fprintf(stderr, "OZIP: Found no files matching '%s'\n", argv[i]);
 				}
