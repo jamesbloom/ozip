@@ -15,7 +15,7 @@
 #include "oodle2.h"
 #include <fcntl.h>
 
-#define OZIP_VER "0.0.8"
+#define OZIP_VER "0.0.9"
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 # define PLATFORM_UNIX
