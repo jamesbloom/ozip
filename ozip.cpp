@@ -88,7 +88,12 @@ char logfilename[] = "c:\\test\\OZIP.log";
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#define RR_UNUSED_VARIABLE(x) (void)(sizeof(x))
+#if defined(_MSC_VER) && _MSC_VER >= 1600 // in 2010 aka 10.0 and later 
+	#define RR_UNUSED_VARIABLE(x) (void) (x)
+#else
+	#define RR_UNUSED_VARIABLE(x) (void)(sizeof(x))
+#endif
+
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
@@ -282,7 +287,6 @@ void print_oodle_help()
 		fprintf(stderr, "      -ot#  --matchbits=# [10, 28]                match table size\n");
 		fprintf(stderr, "      -od#  --localmatchsize=# { 2^k <= 2<<30 }   local dictionary size \n");
 		fprintf(stderr, "      -oL   --makelrm={0,1}                       use long range matches\n");
-		fprintf(stderr, "      -ou#  --setunused=#                         sets unused bits\n");
 		fprintf(stderr, "      -ok   --quantumCRC                          encoder CRC for decode\n");
 		fprintf(stderr, "      -ov#                                        backwards compatible to revision#\n");
 		fprintf(stderr, "OZIP: built with Oodle SDK Version 2.%i.%i.\n", OODLE2_VERSION_MAJOR,OODLE2_VERSION_MINOR);
@@ -532,12 +536,6 @@ void handle_oodle_opt( char * opt_in_arg)
 	case'L':
 	{
 		set_lrm(valuepoint);
-		break;
-	}
-	case'u':
-	{
-		int parsedval = atoi(valuepoint);
-		compressoptions.unused = (U32)parsedval;
 		break;
 	}
 	case'k':
@@ -845,12 +843,6 @@ void parse_oodle_opt(int argc, char * * const argv)
 		if ((valuepoint = compare_end(argv[optind],"--makelrm=")) != NULL)
 		{
 			set_lrm(valuepoint);
-		}
-		if ((valuepoint = compare_end(argv[optind],"--setunused=")) != NULL)
-		{
-			int parsedval = atoi(valuepoint);
-			compressoptions.unused = (U32)parsedval;
-			continue;
 		}
 		if ((valuepoint = compare_end(argv[optind],"--quantumCRC")) != NULL)
 		{
@@ -1842,7 +1834,7 @@ bool iterate_on_file_args(int argc, char * argv[])
 						}
 						//fileindex++;
 						g_cleanonexit = false;
-						foundgoodfile = handle_file(filetoprocess.x);
+						foundgoodfile |= handle_file(filetoprocess.x);
 					} while (FindNextFileA(filehandle, &filedata));
 				}
 				if (!foundgoodfile)
