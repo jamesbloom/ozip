@@ -45,7 +45,7 @@ More Options
 -k --keep               
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *keep original file (otherwise deleted)*      
 -f --force              
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *overwrite output file if exists *  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *overwrite output file if exists*  
 -F --fast              
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *low latency streaming compression*  
 -b --best              
@@ -66,6 +66,7 @@ More Options
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *(KB) minimum block size in KB for streaming*  
 --contextlimit=[8+]     
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *(KB) context limit KB. trades memory use for ratio*   
+
 Unix only:   
 --timeout=[1000]        
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *time in ms to wait on inactve stdin during compression*  
