@@ -94,7 +94,6 @@ char logfilename[] = "c:\\test\\OZIP.log";
 	#define RR_UNUSED_VARIABLE(x) (void)(sizeof(x))
 #endif
 
-
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif
