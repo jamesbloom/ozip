@@ -756,7 +756,7 @@ void set_level(char inchar)
 	int parsedlevel = inchar - '0';
 	if (parsedlevel < OodleLZ_CompressionLevel_Min || parsedlevel > OodleLZ_CompressionLevel_Max)
 	{
-		if (!g_bequiet) fprintf(stderr, "OZIP: invalid arg - compressor level only valid in [%i , $i].\n",OodleLZ_CompressionLevel_Min, OodleLZ_CompressionLevel_Max);
+		if (!g_bequiet) fprintf(stderr, "OZIP: invalid arg - compressor level only valid in [%i , $i].\n", (int)OodleLZ_CompressionLevel_Min, (int)OodleLZ_CompressionLevel_Max);
 	}
 	else
 	{
@@ -1020,7 +1020,7 @@ void parse_opt(int argc, char * *const argv)
 	}
 	if (g_level < OodleLZ_CompressionLevel_Min || g_level > OodleLZ_CompressionLevel_Max)
 	{
-		if (!g_bequiet) fprintf(stderr, "OZIP: invalid arg - compressor level only valid in [%i , $i].\n", OodleLZ_CompressionLevel_Min, OodleLZ_CompressionLevel_Max);
+		if (!g_bequiet) fprintf(stderr, "OZIP: invalid arg - compressor level only valid in [%i , $i].\n", (int)OodleLZ_CompressionLevel_Min, (int)OodleLZ_CompressionLevel_Max);
 		g_level = DEFAULT_LEVEL;
 	}
 	g_beverbose &= !g_bequiet;
