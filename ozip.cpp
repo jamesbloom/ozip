@@ -681,10 +681,9 @@ void handle_opt(char optchar, char * arg = NULL)
 			g_longwait = 50;
 			if (!g_bequiet) fprintf(stderr, "OZIP: --timeout minimum is 50ms. using 50ms\n");
 		}
-		if (g_shortwait <= g_longwait)
+		if (g_shortwait >= g_longwait)
 		{
 			g_shortwait = g_longwait / 2;
-			g_longwait = g_longwait / 2;		
 		}
 		break;
 	}
