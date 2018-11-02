@@ -93,7 +93,7 @@ Block Header Version 1:  16 bytes.
 4 bytes compressed size.  
 
 # About   
-OZIP ver. 1.1.1   
+OZIP ver. 0.1.1   
 
 Ozip originnally developed by:   
 https://github.com/jamesbloom/ozip   
