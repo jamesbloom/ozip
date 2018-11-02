@@ -16,7 +16,7 @@
 #include "oodle2x.h"
 #include <fcntl.h>
 
-#define OZIP_VER "0.1.0"
+#define OZIP_VER "0.1.1"
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 # define PLATFORM_UNIX
@@ -569,7 +569,7 @@ void handle_opt(char optchar, char * arg = NULL)
     switch (optchar)
     {
     case '=': 
-		break;
+        break;
     case 'd':
     {
         g_decompressflag = true;
@@ -1048,7 +1048,7 @@ void parse_opt(int argc, char * *const argv)
     }
     
     //check oodle opts after others and then validate.
-    //	(-ox two char options)
+    //  (-ox two char options)
     parse_oodle_opt(argc, argv);
     OodleLZ_CompressOptions_Validate(&compressoptions);
 
@@ -1716,7 +1716,7 @@ bool handle_p2p(U64 filesize = 0)
     }
 }
 
-U64 g_benchmark_files = 0;
+int g_benchmark_files = 0;
 U64 g_benchmark_raw_bytes = 0;
 U64 g_benchmark_comp_bytes = 0;
 double g_benchmark_enc_time = 0;
@@ -1725,157 +1725,175 @@ double g_benchmark_dec_time = 0;
 const double c_benchmark_min_time = 2.0;
 const int c_benchmark_min_reps = 3;
 
+#ifdef _MSC_VER
+#define U64_FMT "I64u"
+#else
+#define U64_FMT "llu"
+#endif
+
 void benchmark_print_line(FILE * fp,const char * name,U64 raw_bytes,U64 comp_bytes,double enc_time,double dec_time,char eol)
 {
-	double ratio = (double)raw_bytes / comp_bytes;
-	double enc_MBs = (raw_bytes / 1000000.0) / enc_time;
-	double dec_MBs = (dec_time == 0.0) ? 0.0 : ((raw_bytes / 1000000.0) / dec_time);
-	
-	char compressor_char = OodleLZ_Compressor_GetName(g_compressor)[0];
-	
-// match Zstd -b formatting :	
+    double ratio = (double)raw_bytes / comp_bytes;
+    double enc_MBs = (raw_bytes / 1000000.0) / enc_time;
+    double dec_MBs = (dec_time == 0.0) ? 0.0 : ((raw_bytes / 1000000.0) / dec_time);
+    
+    char compressor_char = OodleLZ_Compressor_GetName(g_compressor)[0];
+    
+// match Zstd -b formatting :   
 // 3# 12 files         : 211938580 ->  66981689 (3.164),  53.9 MB/s , 223.0 MB/s
 
-	if ( ratio < 10.0 )
-	{
-		fprintf(fp,"%c%2d %-17s: %9d -> %9d (%5.3f),%6.1f MB/s ,%6.1f MB/s %c",
-			(int)compressor_char,(int)g_level,
-			name,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
-	}
-	else
-	{
-		fprintf(fp,"%c%2d %-17s: %9d -> %9d (%5.2f),%6.1f MB/s ,%6.1f MB/s %c",
-			(int)compressor_char,(int)g_level,
-			name,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
-	}
+    if ( ratio < 10.0 )
+    {
+        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.3f),%6.1f MB/s ,%6.1f MB/s %c",
+            compressor_char,g_level,
+            name,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
+    }
+    else
+    {
+        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.2f),%6.1f MB/s ,%6.1f MB/s %c",
+            compressor_char,g_level,
+            name,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
+    }
 }
 
 void benchmark_init()
 {
-	static bool s_once = false;
-	if ( s_once ) return;
-	s_once = true;
+    static bool s_once = false;
+    if ( s_once ) return;
+    s_once = true;
 
-	// Init OodleX so we can use OodleX_GetSeconds
-	// otherwise OodleX is not used by ozip
+    // Init OodleX so we can use OodleX_GetSeconds
+    // otherwise OodleX is not used by ozip
 
-	OodleX_Init_Default(OODLE_HEADER_VERSION,OodleX_Init_GetDefaults_DebugSystems_No,OodleX_Init_GetDefaults_Threads_No);
+    OodleX_Init_Default(OODLE_HEADER_VERSION,OodleX_Init_GetDefaults_DebugSystems_No,OodleX_Init_GetDefaults_Threads_No);
 }
 
+char g_benchmark_filename[24];
+    
 bool benchmark(const char * fullfilename,U64 infilesize)
 {
-	benchmark_init();
+    benchmark_init();
 
-	// make filepart of filename
-	char filename[24];
-	const char * pname = fullfilename + strlen(fullfilename) - 1;
-	while( pname > fullfilename )
-	{
-		pname--;
-		if ( *pname == '/' || *pname == '\\' )
-		{
-			pname++;
-			break;
-		}
-	}
-	strncpy(filename,pname,20);
+    // make filepart of filename
+    const char * pname = fullfilename + strlen(fullfilename) - 1;
+    while( pname > fullfilename )
+    {
+        pname--;
+        if ( *pname == '/' || *pname == '\\' )
+        {
+            pname++;
+            break;
+        }
+    }
+    strncpy(g_benchmark_filename,pname,20);
+    g_benchmark_filename[19] = 0;
+    pname = g_benchmark_filename;
 
-	int in_size = (int) infilesize;
-	if ( (U64)in_size != infilesize )
-	{
-		fprintf(stderr, "OZIP: benchmark 32 bit file sizes only\n");
-		return false;
-	}
+    int in_size = (int) infilesize;
+    if ( (U64)in_size != infilesize )
+    {
+        fprintf(stderr, "OZIP: benchmark 32 bit file sizes only\n");
+        return false;
+    }
 
-	void * in_buf = ozip_malloc( in_size );
-	void * comp_buf = ozip_malloc( (int) OodleLZ_GetCompressedBufferSizeNeeded(in_size) );
+    void * in_buf = ozip_malloc( in_size );
+    void * comp_buf = ozip_malloc( (int) OodleLZ_GetCompressedBufferSizeNeeded(in_size) );
 
-	size_t in_got = fread(in_buf,1,in_size,g_istream);
-	if ( in_got != (size_t)in_size )
-		return false;
-	
-	SINTa comp_size = -1;
-	double enc_time = 99999999.9;
+    size_t in_got = fread(in_buf,1,in_size,g_istream);
+    if ( in_got != (size_t)in_size )
+        return false;
+    
+    SINTa comp_size = -1;
+    double enc_time = 99999999.9;
 
-	{
-	int reps=0;
-	double total_seconds = 0;
-	for(;;)
-	{
-		double dt = OodleX_GetSeconds();
-		
-		comp_size = OodleLZ_Compress(g_compressor, in_buf, in_size, comp_buf, (OodleLZ_CompressionLevel)g_level, &compressoptions, NULL, NULL, g_scratchmemory, g_scratchmemsize);
+    {
+    int reps=0;
+    double total_seconds = 0;
+    for(;;)
+    {
+        double dt = OodleX_GetSeconds();
+        
+        comp_size = OodleLZ_Compress(g_compressor, in_buf, in_size, comp_buf, (OodleLZ_CompressionLevel)g_level, &compressoptions, NULL, NULL, g_scratchmemory, g_scratchmemsize);
 
-		dt = OodleX_GetSeconds() - dt;
-		
-		if ( comp_size == OODLELZ_FAILED )
-			return false;
-			
-		total_seconds += dt;
-		enc_time = min(enc_time,dt);
-		reps++;
+        dt = OodleX_GetSeconds() - dt;
+        
+        if ( comp_size == OODLELZ_FAILED )
+            return false;
+            
+        total_seconds += dt;
+        enc_time = min(enc_time,dt);
+        reps++;
 
-		benchmark_print_line(stderr,filename,in_size,comp_size,enc_time,0.0,'\r');
-		fflush(stderr);
-		
-		if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
-			break;
-	}
-	}
-	
-	double dec_time = 99999999.9;
-	
-	{
-	int reps=0;
-	double total_seconds = 0;
-	for(;;)
-	{
-		double dt = OodleX_GetSeconds();
-		
-		SINTa dec_got = OodleLZ_Decompress(comp_buf,comp_size,in_buf,in_size,OodleLZ_FuzzSafe_Yes,OodleLZ_CheckCRC_No,OodleLZ_Verbosity_None,NULL,0,NULL,NULL,g_scratchmemory, g_scratchmemsize);
+        benchmark_print_line(stderr,pname,in_size,comp_size,enc_time,0.0,'\r');
+        fflush(stderr);
+        
+        if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
+            break;
+    }
+    }
+    
+    double dec_time = 99999999.9;
+    
+    {
+    int reps=0;
+    double total_seconds = 0;
+    for(;;)
+    {
+        double dt = OodleX_GetSeconds();
+        
+        SINTa dec_got = OodleLZ_Decompress(comp_buf,comp_size,in_buf,in_size,OodleLZ_FuzzSafe_Yes,OodleLZ_CheckCRC_No,OodleLZ_Verbosity_None,NULL,0,NULL,NULL,g_scratchmemory, g_scratchmemsize);
 
-		dt = OodleX_GetSeconds() - dt;
-		
-		if ( dec_got != in_size )
-			return false;
-		
-		total_seconds += dt;
-		dec_time = min(dec_time,dt);
-		reps++;
-		
-		benchmark_print_line(stderr,filename,in_size,comp_size,enc_time,dec_time,'\r');
-		fflush(stderr);
-		
-		if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
-			break;
-	}
-	}
-	
-	free(in_buf);
-	free(comp_buf);
-	
-	g_benchmark_files ++;
-	g_benchmark_raw_bytes += in_size;
-	g_benchmark_comp_bytes += comp_size;
-	g_benchmark_enc_time += enc_time;
-	g_benchmark_dec_time += dec_time;
+        dt = OodleX_GetSeconds() - dt;
+        
+        if ( dec_got != in_size )
+            return false;
+        
+        total_seconds += dt;
+        dec_time = min(dec_time,dt);
+        reps++;
+        
+        benchmark_print_line(stderr,pname,in_size,comp_size,enc_time,dec_time,'\r');
+        fflush(stderr);
+        
+        if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
+            break;
+    }
+    }
+    
+    free(in_buf);
+    free(comp_buf);
+    
+    g_benchmark_files ++;
+    g_benchmark_raw_bytes += in_size;
+    g_benchmark_comp_bytes += comp_size;
+    g_benchmark_enc_time += enc_time;
+    g_benchmark_dec_time += dec_time;
 
-	return true;
+    return true;
 }
 
 void benchmark_finish()
 {
-	if ( g_benchmark_files == 0 || g_benchmark_raw_bytes == 0 )
-	{
-		printf("benchmark: no files!\n");
-		return;
-	}
-	
-	char num_files_string[80];
-	sprintf(num_files_string,"%d files",g_benchmark_files);
+    if ( g_benchmark_files == 0 || g_benchmark_raw_bytes == 0 )
+    {
+        printf("benchmark: no files!\n");
+        return;
+    }
+    
+    if ( g_benchmark_files == 1 )
+    {
+        // stdout or stderr ?
+        // reuse g_benchmark_filename made by the one benchmark run
+        benchmark_print_line(stdout,g_benchmark_filename,g_benchmark_raw_bytes,g_benchmark_comp_bytes,g_benchmark_enc_time,g_benchmark_dec_time,'\n');
+    }
+    else
+    {
+        char num_files_string[80];
+        sprintf(num_files_string,"%d files",g_benchmark_files);
 
-	// stdout or stderr ?
-	benchmark_print_line(stdout,num_files_string,g_benchmark_raw_bytes,g_benchmark_comp_bytes,g_benchmark_enc_time,g_benchmark_dec_time,'\n');
+        // stdout or stderr ?
+        benchmark_print_line(stdout,num_files_string,g_benchmark_raw_bytes,g_benchmark_comp_bytes,g_benchmark_enc_time,g_benchmark_dec_time,'\n');
+    }
 }
 
 //Handles potential filename argument
@@ -1906,10 +1924,10 @@ bool handle_file(char * infilecandidate)
     //instream is set
     g_istream = infilestream;
     
-	if ( g_benchmark_mode )
-	{
-		success = benchmark(g_infilename,infilesize);
-	}
+    if ( g_benchmark_mode )
+    {
+        success = benchmark(g_infilename,infilesize);
+    }
     else if (g_outputstd)
     {
         g_ostream = stdout;
@@ -1993,11 +2011,11 @@ bool handle_file(char * infilecandidate)
     }
     if (g_istream && g_istream!=stdin)
     {
-		fclose(g_istream); g_istream = NULL;
+        fclose(g_istream); g_istream = NULL;
     }
     if (g_ostream && g_ostream!=stdout)
     {
-		fclose(g_ostream); g_ostream = NULL;
+        fclose(g_ostream); g_ostream = NULL;
     }
     return success;
 }
@@ -2100,11 +2118,11 @@ int main(int argc, char * argv[])
         //operate on file args
         bool didsomething = iterate_on_file_args(argc, argv);
 
-		if ( g_benchmark_mode )
-		{
-			benchmark_finish();
-			didsomething = true;
-		}
+        if ( g_benchmark_mode )
+        {
+            benchmark_finish();
+            didsomething = true;
+        }
 
         if (!didsomething)   //didn't operate on file arg, default to stdin to stdout mode.
         {
