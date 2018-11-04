@@ -29,7 +29,8 @@ Compressor selection:
 
 		       
 compression effort level:     
-          -1 -2  ...  -8  
+          -1 -2  ...  -9
+negative levels (-4 to -1) are HyperFasts and can be set with "-ol" option (eg. -ol-2)
 *Higher effort levels get a better compression ratio at the expense of encode time*
 
 More Options  
@@ -95,7 +96,7 @@ Block Header Version 1:  16 bytes.
 # About   
 OZIP ver. 0.1.1   
 
-Ozip originnally developed by:   
+Ozip originally developed by:   
 https://github.com/jamesbloom/ozip   
 jamesbloom@gmail.com    
     
