@@ -1,6 +1,7 @@
 
 # OZIP
 **Ozip** is a simple compression utility utilizing the Oodle high performance compression library.  Ozip's functionality mimics gzip; most invocations function identically. Like gzip, Ozip supports streaming compression/decompression from stdin to stdout. Builds on Windows, Linux and Mac.  
+
 Ozip requires the Oodle SDK.  
 # Usage    
 
@@ -9,18 +10,22 @@ ozip [file] [-d opts]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (decompress)
 
 * without file args ozip defaults to stdin/stdout compression.  
 * uses .ooz extension for compressed files.  
-* (!)Deletes input files unless -k --keep opt is used (as does gzip).  
+* (!)Deletes input files unless -k --keep option is used (like gzip).  
 * Ozip iterates on multiple file targets. To combine files, compose with tar (e.g. tar <files> | ozip > "archivedfiles.tar.ooz")
 
 Default compression settings are Oodle Kraken at Compression Level Normal (4).  
 
 # Settings  
 Compressor selection:  
-                      --kraken -mk  
-                      --leviathan -ml  
-                      --selkie -ms  
-                       --mermaid -mm  
-               	       --hydra -mh  
+
+```
+    --kraken -mk  
+    --leviathan -ml  
+    --selkie -ms  
+    --mermaid -mm  
+    --hydra -mh  
+```
+
      *Kraken provides a balance of ratio and speed.   
      Leviathan provides maximum compression.    
      Selkie and Mermaid are even faster.                    
@@ -73,15 +78,16 @@ Unix only:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *time in ms to wait on inactve stdin during compression*  
 
 
-Additional Oodle Compression options displayed with -H. See the Oodle Data Documentation for details.   
+Additional Oodle Compression options displayed with -H. See the Oodle Data Compression SDK documentation for details.   
 
 # Streaming 
 
 Ozip supports nonblocking stream on linux, otherwise reading for EOF until bufferlimit. Setting a smaller blocklimit represents less tolerance for timeouts on linux, triggering a block to encode with less received data. Lower latency can also be achieved on all platforms by setting smaller max buffer size at the cost of compression ratio (this also lowers memory use)
 
-# Headers 
+# File Format 
 
-Ozip adds a file header and block header to compressed data stream. Values are little endian.  
+Ozip adds a file header and block header to the compressed data stream. Values are little endian.  
+
 File Header Version 1:   16 bytes.      
 4 byte "OZIP" magic word.  
 4 byte Header Version.   
@@ -92,6 +98,15 @@ Block Header Version 1:  16 bytes.
 4 bytes raw block size.  
 4 bytes context size.  
 4 bytes compressed size.  
+
+Each ozip file consists of :
+
+````
+File Header
+repeated :
+  Block Header
+  Block compressed data
+````
 
 # About   
 OZIP ver. 0.1.1   
