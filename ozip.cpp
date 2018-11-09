@@ -1742,17 +1742,21 @@ void benchmark_print_line(FILE * fp,const char * name,U64 raw_bytes,U64 comp_byt
 // match Zstd -b formatting :   
 // 3# 12 files         : 211938580 ->  66981689 (3.164),  53.9 MB/s , 223.0 MB/s
 
+    char shortname[18];
+    strncpy(shortname,name,17);
+    shortname[17] = 0;
+
     if ( ratio < 10.0 )
     {
-        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.3f),%6.1f MB/s ,%6.1f MB/s %c",
+        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.3f),%6.1f MB/s,%7.1f MB/s%c",
             compressor_char,g_level,
-            name,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
+            shortname,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
     }
     else
     {
-        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.2f),%6.1f MB/s ,%6.1f MB/s %c",
+        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.2f),%6.1f MB/s,%7.1f MB/s%c",
             compressor_char,g_level,
-            name,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
+            shortname,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
     }
 }
 
