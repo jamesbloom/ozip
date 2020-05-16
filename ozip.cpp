@@ -289,8 +289,8 @@ void print_oodle_help()
         fprintf(stderr, "      -ok   --quantumCRC                          encoder CRC for decode\n");
         fprintf(stderr, "      -ov#                                        backwards compatible to rev#\n");
         fprintf(stderr, "OZIP: built with Oodle SDK Version %s\n", OodleVersion);
-        fprintf(stderr, "%s\n", RADCOPYRIGHT);
         fprintf(stderr, "ozip is public domain and here: https://github.com/jamesbloom/ozip/\n");
+        fprintf(stderr, "%s\n", RADCOPYRIGHT);
         fprintf(stderr, "use of Oodle requires an Oodle license.\n");
     }
 }
@@ -600,22 +600,20 @@ void handle_opt(char optchar, char * arg = NULL)
         print_help();
         break;
     }
-    case 'L':
-    {
-        fprintf(stderr, RADCOPYRIGHT);
-        fprintf(stderr, "\n");
-        break;
-    }
     case 'K':
     {
         g_verify = true;
         if (g_beverbose) fprintf(stderr, "OZIP: verify compressed output\n");       
         break;
     }
-    case 'V':
+    case 'V': // version
+    case 'L': // license
     {
         fprintf(stderr, "OZIP v.%s\n",OZIP_VER);
-        fprintf(stderr, "Oodle Version %s\n", OodleVersion);
+        fprintf(stderr, " built with Oodle SDK Version %s\n", OodleVersion);
+        fprintf(stderr, "ozip is public domain and here: https://github.com/jamesbloom/ozip/\n");
+        fprintf(stderr, "%s\n", RADCOPYRIGHT);
+        fprintf(stderr, "use of Oodle requires an Oodle license.\n");
         break;
     }
     case 'v':
