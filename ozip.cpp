@@ -117,7 +117,7 @@ U32 g_contextlimit = 16 * 1024 * 1024;
 U32 g_shortwait = 100;                  //ms timeout
 U32 g_longwait = 1000;                  //ms timeout
 
-struct OodleLZ_CompressOptions compressoptions;
+struct OodleLZ_CompressOptions compressoptions = { };
 
 FILE * g_istream = NULL;
 FILE * g_ostream = NULL;
@@ -1722,7 +1722,7 @@ double g_benchmark_enc_time = 0;
 double g_benchmark_dec_time = 0;
 
 const double c_benchmark_min_time = 2.0;
-const int c_benchmark_min_reps = 3;
+const int c_benchmark_min_reps = 2;
 
 #ifdef _MSC_VER
 #define U64_FMT "I64u"
@@ -1759,26 +1759,10 @@ void benchmark_print_line(FILE * fp,const char * name,U64 raw_bytes,U64 comp_byt
 	}
 }
 
-void benchmark_init()
-{
-	static bool s_once = false;
-	if ( s_once ) return;
-	s_once = true;
-
-	// Init OodleX so we can use OodleX_GetSeconds
-	// otherwise OodleX is not used by ozip
-
-	OodleX_Init_Default(OODLE_HEADER_VERSION,
-		OodleX_Init_GetDefaults_DebugSystems_No,
-		OodleX_Init_GetDefaults_Threads_No);
-}
-
 char g_benchmark_filename[24];
 	
 bool benchmark(const char * fullfilename,U64 infilesize)
 {
-	benchmark_init();
-
 	// make filepart of filename
 	const char * pname = fullfilename + strlen(fullfilename) - 1;
 	while( pname > fullfilename )
@@ -2135,6 +2119,14 @@ int main(int argc, char * argv[])
 #endif
     logprintf("OZIP ver:%s built: %s @ %s\n", OZIP_VER, __DATE__, __TIME__);
 
+	// get OodleX threads for Jobify :
+	//	@@ need only 2 worker threads, could make less
+	OodleX_Init_Default(OODLE_HEADER_VERSION,
+		OodleX_Init_GetDefaults_DebugSystems_No,
+		OodleX_Init_GetDefaults_Threads_Yes);
+
+	// OodleX_Init automatically installs itself to Oodle Core Job plugins
+	//	Oodle Core LZ compress default option is jobify yes
 
     register_signal_handlers();
     
@@ -2169,6 +2161,9 @@ int main(int argc, char * argv[])
         
         free(g_scratchmemory); g_scratchmemory = NULL;
     }
+    
+    OodleX_Shutdown();
+    
     return 0;
 }
 
