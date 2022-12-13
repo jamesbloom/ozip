@@ -1,5 +1,5 @@
 /*   OZIP
-    Ozip high-performance compression utility supporting file to file and streaming coding. 
+    Ozip high-performance compression utility supporting file to file and streaming coding.
     Functionality imitates gzip.
     Ozip requires the Oodle SDK 2.6 or higher.
 */
@@ -45,7 +45,7 @@ FILE * logfile = NULL;
 char logfilename[] = "c:\\test\\OZIP.log";
 #endif
 
-#endif
+#endif // PLATFORM_WIN
 
 #ifdef PLATFORM_UNIX
 #include <unistd.h>
@@ -53,17 +53,17 @@ char logfilename[] = "c:\\test\\OZIP.log";
 #define exit _exit
 
 #if defined PATH_MAX && PATH_MAX >= 256
-# define MAX_PATH PATH_MAX   
+# define MAX_PATH PATH_MAX
 #else
 #define MAX_PATH 4096 //!problematic
 #endif
 
-#endif
+#endif // PLATFORM_UNIX
 
 #ifdef __APPLE__
 #define PLATFORM_MAC
 #include <unistd.h>
-#endif
+#endif // PLATFORM_MAC
 
 #ifndef o_stat
 #define o_stat stat
@@ -89,7 +89,7 @@ char logfilename[] = "c:\\test\\OZIP.log";
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER >= 1600 // in 2010 aka 10.0 and later 
+#if defined(_MSC_VER) && _MSC_VER >= 1600 // in 2010 aka 10.0 and later
     #define RR_UNUSED_VARIABLE(x) (void) (x)
 #else
     #define RR_UNUSED_VARIABLE(x) (void)(sizeof(x))
@@ -113,7 +113,7 @@ int g_level = DEFAULT_LEVEL;
 OodleLZ_Compressor g_compressor = DEFAULT_COMPRESSOR;
 U32 g_rawbufferlimit = 64 * 1024 * 1024;
 U32 g_blocklimit = 512 * 1024;                    //min bytes of data to trigger a compress while waiting on stream
-U32 g_contextlimit = 16 * 1024 * 1024;            
+U32 g_contextlimit = 16 * 1024 * 1024;
 U32 g_shortwait = 100;                  //ms timeout
 U32 g_longwait = 1000;                  //ms timeout
 
@@ -127,7 +127,7 @@ char g_outfilename[MAX_PATH];
 
 //flags
 bool g_outputstd=false;
-bool g_compressflag = false;         
+bool g_compressflag = false;
 bool g_decompressflag = false;
 bool g_forceoverwrite=false;
 bool g_benchmark_mode = false;
@@ -189,7 +189,7 @@ void Abort(const char  ErrorMessage[] = NULL)
     if (!g_bequiet)
     {
         if (ErrorMessage) fprintf(stderr, "OZIP:%s\n", ErrorMessage);
-        fprintf(stderr, "OZIP: Aborting...\n");
+                "OZIP: Aborting...\n");
     }
     if (g_cleanonexit) remove(g_outfilename);
     exit(1);
@@ -231,39 +231,41 @@ char * ozip_malloc(int size)
 
 
 //Prints standard help options
-void print_help() 
+void print_help()
 {
     g_printedhelp = true;
     if (!g_bequiet)
     {
-        fprintf(stderr, "OZIP: usage: ozip [file] [options]\n");
-        fprintf(stderr, "compresses stdin to stdout by default\n");
-        fprintf(stderr, "creates/strips *.ooz for compressed/uncompressed file targets.\n");
-        fprintf(stderr, "Input files delete on success (without --keep)\n");
-        fprintf(stderr, "-H                      prints Oodle compressor options help\n");
-        fprintf(stderr, "-c --stdout             outputs to stdout (decompress only). \n");
-        fprintf(stderr, "-d --decompress         decompress\n");
-        fprintf(stderr, "-z --compress           compress\n");
-        fprintf(stderr, "-k --keep               keep original file (otherwise deleted)\n");
-        fprintf(stderr, "-f --force              overwrite output file if exists\n");
-        fprintf(stderr, "-t --test               tests existing compressed file validity\n");
-        fprintf(stderr, "-K --verify             verify file during compression\n");
-        fprintf(stderr, "-q --quiet              no prints\n");
-        fprintf(stderr, "-v --verbose            prints lots\n");
-        fprintf(stderr, "-s --small              low memory use ~2.5MB  (compression only)\n");
-        fprintf(stderr, "-b                      benchmark, print timing and write no output\n");
-        fprintf(stderr, "-(1-9)                  compression level 1-9 (use -ol for hyperfasts)\n");
-        fprintf(stderr, "-m[k] --compressor=[k]  [k/l/m/s] Oodle compressor selection\n");
-        fprintf(stderr, "--kraken --mermaid --selkie --leviathan     Oodle compressor choice\n");
-        fprintf(stderr, "--fast                  low latency streaming compression\n");
-        fprintf(stderr, "--best                  best compression, slow encode. (Leviathan 9)\n");
-        fprintf(stderr, "--bufferlimit=[1-256]   (MB) max buffer size for compression.\n");
-        fprintf(stderr, "--blocklimit=[8+]       (KB) minimum block size in KB for streaming\n");
-        fprintf(stderr, "--contextlimit=[8+]     (KB) context limit KB. trades memory use for ratio\n");
+        fprintf(stdout,
+                "OZIP: usage: ozip [file] [options]\n"
+                "compresses stdin to stdout by default\n"
+                "creates/strips *.ooz for compressed/uncompressed file targets.\n"
+                "Input files delete on success (without --keep)\n"
+                "      -H                      prints Oodle compressor options help\n"
+                "      -c --stdout             outputs to stdout (decompress only). \n"
+                "      -d --decompress         decompress\n"
+                "      -z --compress           compress\n"
+                "      -k --keep               keep original file (otherwise deleted)\n"
+                "      -f --force              overwrite output file if exists\n"
+                "      -t --test               tests existing compressed file validity\n"
+                "      -K --verify             verify file during compression\n"
+                "      -q --quiet              no prints\n"
+                "      -v --verbose            prints lots\n"
+                "      -s --small              low memory use ~2.5MB  (compression only)\n"
+                "      -b                      benchmark, print timing and write no output\n"
+                "      -(1-9)                  compression level 1-9 (use -ol for hyperfasts)\n"
+                "      -m[k] --compressor=[k]  [k/l/m/s] Oodle compressor selection\n"
+                "      --kraken --mermaid --selkie --leviathan     Oodle compressor choice\n"
+                "      --fast                  low latency streaming compression\n"
+                "      --best                  best compression, slow encode. (Leviathan 9)\n"
+                "      --bufferlimit=[1-256]   (MB) max buffer size for compression.\n"
+                "      --blocklimit=[8+]       (KB) minimum block size in KB for streaming\n"
+                "      --contextlimit=[8+]     (KB) context limit KB. trades memory use for ratio\n"
 #ifdef PLATFORM_UNIX
-        fprintf(stderr, "--timeout=[1000]        time in ms to wait on inactive stdin during compression\n");
+                "      --timeout=[1000]        time in ms to wait on inactive stdin during compression\n"
 #endif
-        fprintf(stderr, "OZIP ver:%s built: %s @ %s\n", OZIP_VER,__DATE__, __TIME__);
+                "OZIP ver:%s built: %s @ %s\n"
+                , OZIP_VER,__DATE__, __TIME__);
 
     }
 }
@@ -274,24 +276,28 @@ void print_oodle_help()
     g_printedhelp = true;
     if (!g_bequiet)
     {
-        fprintf(stderr, "OZIP: -H Additional Oodle compression options:\n");
-        fprintf(stderr, "      -o?   --oodlelist                           list Oodle compressorss\n");
-        fprintf(stderr, "      -oc#  --compressor=# { 8,9,11,13 }          compressor choice\n");
-        fprintf(stderr, "      -ol#  --level=# [%d - %d]                    compression level\n",(int)OodleLZ_CompressionLevel_Min, (int)OodleLZ_CompressionLevel_Max);
-        fprintf(stderr, "      -os#  --spacespeedtradeoff=# [64, 1024]     tweak size vs decode time\n");
-        fprintf(stderr, "      -om#  --minmatchlength=# [0, 10]            see Oodle docs\n");
-        fprintf(stderr, "      -or   --seekresets                          seek chunk resets\n");
-        fprintf(stderr, "      -oC#  --seekchunklen=# {2^k >= 2^18}        seek chunk size\n");
-        fprintf(stderr, "      -oo#  --offsetlimit=#                       max reference distance in kb\n");
-        fprintf(stderr, "      -ot#  --matchbits=# [10, 28]                match table size\n");
-        fprintf(stderr, "      -od#  --localmatchsize=# { 2^k <= 2<<30 }   local dictionary size \n");
-        fprintf(stderr, "      -oL   --makelrm={0,1}                       use long range matches\n");
-        fprintf(stderr, "      -ok   --quantumCRC                          encoder CRC for decode\n");
-        fprintf(stderr, "      -ov#                                        backwards compatible to rev#\n");
-        fprintf(stderr, "OZIP: built with Oodle SDK Version %s\n", OodleVersion);
-        fprintf(stderr, "ozip is public domain and here: https://github.com/jamesbloom/ozip/\n");
-        fprintf(stderr, "%s\n", RADCOPYRIGHT);
-        fprintf(stderr, "use of Oodle requires an Oodle license.\n");
+        fprintf(stdout,
+                "OZIP: -H Additional Oodle compression options:\n"
+                "      -o?   --oodlelist                           list Oodle compressorss\n"
+                "      -oc#  --compressor=# { 8,9,11,13 }          compressor choice\n"
+                "      -ol#  --level=# [%d - %d]                    compression level\n"
+                "      -os#  --spacespeedtradeoff=# [64, 1024]     tweak size vs decode time\n"
+                "      -om#  --minmatchlength=# [0, 10]            see Oodle docs\n"
+                "      -or   --seekresets                          seek chunk resets\n"
+                "      -oC#  --seekchunklen=# {2^k >= 2^18}        seek chunk size\n"
+                "      -oo#  --offsetlimit=#                       max reference distance in kb\n"
+                "      -ot#  --matchbits=# [10, 28]                match table size\n"
+                "      -od#  --localmatchsize=# { 2^k <= 2<<30 }   local dictionary size \n"
+                "      -oL   --makelrm={0,1}                       use long range matches\n"
+                "      -ok   --quantumCRC                          encoder CRC for decode\n"
+                "      -ov#                                        backwards compatible to rev#\n"
+                "OZIP: built with Oodle SDK Version %s\n"
+                "ozip is public domain and here: https://github.com/jamesbloom/ozip/\n"
+                "%s\n"
+                "use of Oodle requires an Oodle license.\n"
+                , OodleVersion
+                ,(int)OodleLZ_CompressionLevel_Min, (int)OodleLZ_CompressionLevel_Max
+                , RADCOPYRIGHT);
     }
 }
 
@@ -301,20 +307,22 @@ void print_oodle_enums()
     g_printedhelp = true;
     if (!g_bequiet)
     {
-        fprintf(stderr, "OZIP:   Oodle Compressors:\n");
-        fprintf(stderr, "        Kraken = 8      Default compressor. Good Compression, fast\n");
-        fprintf(stderr, "        Leviathan = 13  Best compression, slower encodes\n");
-        fprintf(stderr, "        Mermaid = 9     Crazy fast, still decent compression\n");
-        fprintf(stderr, "        Selkie = 11     Fastest\n");
-        fprintf(stderr, "        Hydra = 12      Tuneable composite of above\n\n");
-        fprintf(stderr, "        Oodle Levels:\n");
-        fprintf(stderr, "        HyperFast = -4 to -1\n");
-        fprintf(stderr, "        None = 0\n");
-        fprintf(stderr, "        SuperFast = 1\n");
-        fprintf(stderr, "        VeryFast = 2\n");
-        fprintf(stderr, "        Fast = 3\n");
-        fprintf(stderr, "        Normal = 4\n");
-        fprintf(stderr, "        Optimal = 5-9\n");
+        fprintf(stdout,
+                "OZIP:   Oodle Compressors:\n"
+                "        Kraken = 8      Default compressor. Good Compression, fast\n"
+                "        Leviathan = 13  Best compression, slower encodes\n"
+                "        Mermaid = 9     Crazy fast, still decent compression\n"
+                "        Selkie = 11     Fastest\n"
+                "        Hydra = 12      Tuneable composite of above\n\n"
+                "        Oodle Levels:\n"
+                "        HyperFast = -4 to -1\n"
+                "        None = 0\n"
+                "        SuperFast = 1\n"
+                "        VeryFast = 2\n"
+                "        Fast = 3\n"
+                "        Normal = 4\n"
+                "        Optimal = 5-9\n"
+                );
     }
 }
 
@@ -432,7 +440,7 @@ void set_offsetlimit(const char * valuepoint)
     int parsedval = atoi(valuepoint);
     if (parsedval >= 0)
     {
-		/*
+        /*
         if (parsedval <= 256)
         {
             if (!g_bequiet) fprintf(stderr, "OZIP: Warning: Offsetlimit=%i,  values < 256 act as 0\n", parsedval);
@@ -526,7 +534,7 @@ void handle_oodle_opt(const char * opt_in_arg)
             Oodle_GetConfigValues(&oodleconfig);
             oodleconfig.m_OodleLZ_BackwardsCompatible_MajorVersion = major - '0';
             Oodle_SetConfigValues(&oodleconfig);
-            
+
             if (g_beverbose) fprintf(stderr, "OZIP: set BackwardsCompatible_MajorVersion = %i\n", oodleconfig.m_OodleLZ_BackwardsCompatible_MajorVersion);
         }
         else
@@ -563,14 +571,14 @@ void handle_oodle_opt(const char * opt_in_arg)
     }
     }
 }
-    
+
 //Switch on option flags. sets global command line parameter flags.
 void handle_opt(char optchar, char * arg = NULL)
 {
     switch (optchar)
     {
-    case '=': 
-		break;
+    case '=':
+        break;
     case 'd':
     {
         g_decompressflag = true;
@@ -603,23 +611,23 @@ void handle_opt(char optchar, char * arg = NULL)
     case 'K':
     {
         g_verify = true;
-        if (g_beverbose) fprintf(stderr, "OZIP: verify compressed output\n");       
+        if (g_beverbose) fprintf(stderr, "OZIP: verify compressed output\n");
         break;
     }
     case 'V': // version
     case 'L': // license
     {
-        fprintf(stderr, "OZIP v.%s\n",OZIP_VER);
-        fprintf(stderr, " built with Oodle SDK Version %s\n", OodleVersion);
-        fprintf(stderr, "ozip is public domain and here: https://github.com/jamesbloom/ozip/\n");
-        fprintf(stderr, "%s\n", RADCOPYRIGHT);
-        fprintf(stderr, "use of Oodle requires an Oodle license.\n");
+                "OZIP v.%s\n",OZIP_VER);
+                " built with Oodle SDK Version %s\n", OodleVersion);
+                "ozip is public domain and here: https://github.com/jamesbloom/ozip/\n");
+                "%s\n", RADCOPYRIGHT);
+                "use of Oodle requires an Oodle license.\n");
         break;
     }
     case 'v':
     {
         g_beverbose = true;
-        if (g_beverbose) fprintf(stderr, "OZIP: verbose\n");        
+        if (g_beverbose) fprintf(stderr, "OZIP: verbose\n");
         break;
     }
     case 'q':
@@ -634,13 +642,13 @@ void handle_opt(char optchar, char * arg = NULL)
         g_rawbufferlimit = 4 * 1024 * 1024;
         g_blocklimit = 128 * 1024;
         g_contextlimit = 1024 * 1024;
-        if (g_beverbose) fprintf(stderr, "OZIP: small memory mode\n");      
+        if (g_beverbose) fprintf(stderr, "OZIP: small memory mode\n");
         break;
     }
     case 't':
     {
         g_testfile = true;
-        if (g_beverbose) fprintf(stderr, "OZIP: test compressed input\n");      
+        if (g_beverbose) fprintf(stderr, "OZIP: test compressed input\n");
         break;
     }
     case '1':
@@ -650,11 +658,11 @@ void handle_opt(char optchar, char * arg = NULL)
     case '5':
     case '6':
     case '7':
-    case '8':   
+    case '8':
     case '9':
     {
         g_level = optchar - '0';
-        if (g_beverbose) fprintf(stderr, "OZIP: level = %i\n",g_level);             
+        if (g_beverbose) fprintf(stderr, "OZIP: level = %i\n",g_level);
         break;
     }
     case 'f':
@@ -698,7 +706,7 @@ void handle_opt(char optchar, char * arg = NULL)
         if (g_shortwait <= g_longwait)
         {
             g_shortwait = g_longwait / 2;
-            g_longwait = g_longwait / 2;        
+            g_longwait = g_longwait / 2;
         }
         break;
     }
@@ -804,7 +812,7 @@ void parse_oodle_opt(int argc, char * * const argv)
             set_level(valuepoint);
             continue;
         }
-    
+
         if ((valuepoint = compare_end(argv[optind],"-oc")) != NULL)
         {
             set_compressor(valuepoint);
@@ -818,7 +826,7 @@ void parse_oodle_opt(int argc, char * * const argv)
     //fetch defaults
     const struct OodleLZ_CompressOptions * constoptions = OodleLZ_CompressOptions_GetDefault(g_compressor, (OodleLZ_CompressionLevel)g_level);
     compressoptions = *constoptions;
-    
+
     for (int optind = 1; optind < argc; optind++)
     {
         if ((valuepoint = compare_end(argv[optind],"--oodlelist")) != NULL)
@@ -1037,7 +1045,7 @@ void parse_opt(int argc, char * *const argv)
                         //if (!g_bequiet) fprintf(stderr, "Ozip: ignored unrecognized opt flag -%c\n", argv[optind][shortind]);
                         continue;
                     }
-                    else 
+                    else
                     {
                         handle_opt(*p, argv[optind]);
                     }
@@ -1045,9 +1053,9 @@ void parse_opt(int argc, char * *const argv)
             }
         }
     }
-    
+
     //check oodle opts after others and then validate.
-    //	(-ox two char options)
+    //    (-ox two char options)
     parse_oodle_opt(argc, argv);
     OodleLZ_CompressOptions_Validate(&compressoptions);
 
@@ -1075,7 +1083,7 @@ void parse_opt(int argc, char * *const argv)
 }
 
 //Write wrapper. Aborts on fail
-U32 ozip_write(void * buffer, U32 elementsize, U32 elementcount,FILE * stream) 
+U32 ozip_write(void * buffer, U32 elementsize, U32 elementcount,FILE * stream)
 {
     size_t written = fwrite(buffer, elementsize, elementcount, stream);
     if (written != elementcount)
@@ -1203,14 +1211,14 @@ bool timeout_on_stream(U32 milisectime)
     FD_SET(o_fileno(g_istream), &rfds);
     tv.tv_sec = 0;   //seconds
     tv.tv_usec = milisectime*1000;   //microseconds
-    int state = select(o_fileno(g_istream) + 1, &rfds, NULL, NULL, &tv); //state==0 is timeout. 
+    int state = select(o_fileno(g_istream) + 1, &rfds, NULL, NULL, &tv); //state==0 is timeout.
     return (state == 0);
 }
 #endif
 
 //Reads bytes from stream
 //Returns true if has bytes read to compress.
-//Returns false at eof or timeout(unix only) with no bytes in buffer 
+//Returns false at eof or timeout(unix only) with no bytes in buffer
 //If buffer filled, grows 4x at a time to bufferlimit
 bool got_bytes_to_compress(U32  &bytesread, U32 &rawbufsize, char * &rawbufbase,U32 dataoffset)
 {
@@ -1230,18 +1238,18 @@ bool got_bytes_to_compress(U32  &bytesread, U32 &rawbufsize, char * &rawbufbase,
             }
         }
         int bytestoread = rawbufsize - (dataoffset+bytesread);
-        
-        int gotbytes = o_read(o_fileno(g_istream), rawbufbase + dataoffset + bytesread, bytestoread);   
-        
+
+        int gotbytes = o_read(o_fileno(g_istream), rawbufbase + dataoffset + bytesread, bytestoread);
+
         if (gotbytes > 0)
         {
-            bytesread += gotbytes;      
+            bytesread += gotbytes;
         }
         if (feof(g_istream) || gotbytes == 0) //read returning zero also indicates eof
         {
             return bytesread > 0;
         }
-        if (gotbytes < bytestoread)     
+        if (gotbytes < bytestoread)
         {
             if (bytesread > g_blocklimit)
             {
@@ -1260,7 +1268,7 @@ bool got_bytes_to_compress(U32  &bytesread, U32 &rawbufsize, char * &rawbufbase,
                 }
                 else if (timeout_on_stream(g_longwait))
                 {
-                    return (bytesread > 0);  //can return false, truncating file if there's 1100ms with no activity. 
+                    return (bytesread > 0);  //can return false, truncating file if there's 1100ms with no activity.
                 }
             }
         }
@@ -1300,10 +1308,10 @@ void update_context_buffer(U32 &contextsize, char * &rawbufbase,U32 &rawbufsize,
     }
     //we have room. continue.
     else
-    {   
+    {
         dataoffset += bytesread;
     }
-    contextsize = newcontextsize; 
+    contextsize = newcontextsize;
 }
 
 //writes ozip4cc to stream, header version. values written to stream little-endian.
@@ -1354,20 +1362,20 @@ bool compress(U64 filesize)
     U64 totalcompsize = 0;
     if (g_beverbose)
     {
-        fprintf(stderr, "OZIP: Compressing with compressor=%i (%s), level=%i (%s)\n", (int)g_compressor, OodleLZ_Compressor_GetName(g_compressor), g_level, OodleLZ_CompressionLevel_GetName((OodleLZ_CompressionLevel)g_level) );
-        fprintf(stderr, "OZIP: rawbufferlimit=%iKB, blocksize=%iKB\n", g_rawbufferlimit / 1024, g_blocklimit / 1024);
+                "OZIP: Compressing with compressor=%i (%s), level=%i (%s)\n", (int)g_compressor, OodleLZ_Compressor_GetName(g_compressor), g_level, OodleLZ_CompressionLevel_GetName((OodleLZ_CompressionLevel)g_level) );
+                "OZIP: rawbufferlimit=%iKB, blocksize=%iKB\n", g_rawbufferlimit / 1024, g_blocklimit / 1024);
     }
     else if (!g_bequiet && g_f2f) fprintf(stderr, "OZIP: Compressing %s\nOZIP:...",g_infilename ? g_infilename : "");
     logprintf("compress() start for %s\n",g_infilename);
     logprintf("Using compressor=%i, level=%i\n", g_compressor,g_level);
     //streamheader
     put_file_header(filesize);
-    //Buffers   
+    //Buffers
     char * compbuf = NULL;
     U32 compbufsize = 0;
     U32 rawbufsize = (U32)min(g_rawbufferlimit, filesize);
     rawbufsize = max(rawbufsize, g_blocklimit);
-    
+
     logprintf("allocs rawbuf initially to %i\n", rawbufsize);
     char * rawbufbase = ozip_malloc(rawbufsize);
     U32 dataoffset = 0;
@@ -1387,7 +1395,7 @@ bool compress(U64 filesize)
         logprintf("Got blocksize, bufferlimit, or eof\n");
         logprintf("compression firing oodle_compress for %llu\n",bytesread);
         if (!g_bequiet && g_beverbose)fprintf(stderr, "OZIP: uncompressed block size = %u\n", bytesread);
-            
+
         U32 compsize = (U32)OodleLZ_Compress(g_compressor, rawbufbase+dataoffset, bytesread, compbuf, (OodleLZ_CompressionLevel)g_level, &compressoptions, rawbufbase+dataoffset-contextsize, NULL, g_scratchmemory, g_scratchmemsize);
         if (compsize > 0)
         {
@@ -1417,7 +1425,7 @@ bool compress(U64 filesize)
 }
 
 //Guarantees rawbuffer has space for next decompress
-//Grows/memmoves buffer as necessary 
+//Grows/memmoves buffer as necessary
 //Stays below rawbufferlimit unless single block+context is larger
 void ensure_buffer(char* &rawbuffer, U32 &rawbufsize, U32 contextsize, U32 rawsize, U32 &dataoffset)
 {
@@ -1429,7 +1437,7 @@ void ensure_buffer(char* &rawbuffer, U32 &rawbufsize, U32 contextsize, U32 rawsi
         {
             logprintf("growing buffer 4x (or to limit)\n");
             U32 newbufsize = min(g_rawbufferlimit, rawbufsize * 4);
-            newbufsize = max(newbufsize, contextsize + rawsize); //don't let decomp fail due to rawbufferlimit, always be willing to allocate at least that minimum 
+            newbufsize = max(newbufsize, contextsize + rawsize); //don't let decomp fail due to rawbufferlimit, always be willing to allocate at least that minimum
             char * newrawbuffer = ozip_malloc(newbufsize);
             memcpy(newrawbuffer, rawbuffer + dataoffset - contextsize, contextsize);
             free(rawbuffer);
@@ -1437,8 +1445,8 @@ void ensure_buffer(char* &rawbuffer, U32 &rawbufsize, U32 contextsize, U32 rawsi
             rawbufsize = newbufsize;
         }
         else
-        { 
-            //rawbufsize at (or even beyond) rawbuflimit. 
+        {
+            //rawbufsize at (or even beyond) rawbuflimit.
             if (contextsize + rawsize > rawbufsize)    //still don't let decomp fail due to insufficient bufsize
             {
                 logprintf("!!!!!! Limit too small for a single decode. growing to min size for this decode\n");
@@ -1458,7 +1466,7 @@ void ensure_buffer(char* &rawbuffer, U32 &rawbufsize, U32 contextsize, U32 rawsi
             }
         }
         dataoffset = contextsize;
-    }   
+    }
 }
 
 //Decompresses stream to stream
@@ -1477,7 +1485,7 @@ bool decompress(FILE * verifyagainst = NULL)
 
     U32 verifybuffersize = 0;
     char * verifybuffer = NULL;
-    
+
     U32 compbufsize = 0;
     char * compbuf = NULL;
 
@@ -1504,30 +1512,30 @@ bool decompress(FILE * verifyagainst = NULL)
         if (!get_block_header(rawsize, contextsize, compsize))
         {
             if(compbufsize==0) //never got a header
-            { 
+            {
                 if (!g_bequiet) fprintf(stderr, "OZIP: input not ozip compressed.\n");
                 return false;
             }
             logprintf("No more headers. must be EOF\n");
             break;     //exit point for loop
         }
-        if (!rawsize || !compsize) 
+        if (!rawsize || !compsize)
         {
             if (!g_bequiet) fprintf(stderr, "OZIP: Decomp failed. bad header for compressed block.\n");
             return false;
         }
-        ensure_buffer(rawbuffer, rawbufsize, contextsize, rawsize, dataoffset); 
+        ensure_buffer(rawbuffer, rawbufsize, contextsize, rawsize, dataoffset);
         if (compbufsize < compsize)
         {
             logprintf("compbufsize too small (%i < %i). allocing 1.2 * compressed size\n",compbufsize,compsize);
             free(compbuf);
             compbufsize = (U32)(5 * (compsize >> 2)); //overshoot 25% to limit mallocs
-            compbuf = ozip_malloc(compbufsize);  
+            compbuf = ozip_malloc(compbufsize);
         }
         U32 bytesread = 0;
         //get bytes to decompress
         while (bytesread < compsize)
-        {   
+        {
             U32 thisread = (U32)fread(compbuf + bytesread, 1, compsize - bytesread, g_istream);
             logprintf("fread got %i of %i  (previous total %i of %i)\n",thisread,compsize,bytesread,compsize);
             if (thisread > 0)
@@ -1551,7 +1559,7 @@ bool decompress(FILE * verifyagainst = NULL)
                 }
                 if (ferror(g_istream))
                 {
-                    Abort("ferror(istream)"); 
+                    Abort("ferror(istream)");
                 }
                 //got zero bytes but not eof or ferror? impossible if nonblocking. no need for nonblocking cause nothing can happen until we get completeblock.
             }
@@ -1607,7 +1615,7 @@ bool decompress(FILE * verifyagainst = NULL)
     return true;
 }
 
-bool is_dir(char * filename) 
+bool is_dir(char * filename)
 {
 #ifdef PLATFORM_WIN
     DWORD fileattr = GetFileAttributesA(filename);
@@ -1699,18 +1707,18 @@ bool handle_p2p(U64 filesize = 0)
 
     if (g_decompressflag || g_testfile)
     {
-        bool success = decompress(); 
+        bool success = decompress();
         if (g_testfile && !g_bequiet) fprintf(stderr, "OZIP: File contents %s or uncompressed.\n", (success ? "valid" : "invalid"));
         return success;
     }
-    else  
+    else
     {
         if (isatty(fileno(g_ostream)) && !g_forceoverwrite)
         {
             if (!g_bequiet) fprintf(stderr, "OZIP: won't write compressed data to a terminal without -f --force.\n");
             return false;
         }
-        bool success = compress(filesize);      
+        bool success = compress(filesize);
         return success;
     }
 }
@@ -1732,179 +1740,179 @@ const int c_benchmark_min_reps = 2;
 
 void benchmark_print_line(FILE * fp,const char * name,U64 raw_bytes,U64 comp_bytes,double enc_time,double dec_time,char eol)
 {
-	double ratio = (double)raw_bytes / comp_bytes;
-	double enc_MBs = (raw_bytes / 1000000.0) / enc_time;
-	double dec_MBs = (dec_time == 0.0) ? 0.0 : ((raw_bytes / 1000000.0) / dec_time);
-	
-	char compressor_char = OodleLZ_Compressor_GetName(g_compressor)[0];
-	
-// match Zstd -b formatting :	
+    double ratio = (double)raw_bytes / comp_bytes;
+    double enc_MBs = (raw_bytes / 1000000.0) / enc_time;
+    double dec_MBs = (dec_time == 0.0) ? 0.0 : ((raw_bytes / 1000000.0) / dec_time);
+
+    char compressor_char = OodleLZ_Compressor_GetName(g_compressor)[0];
+
+// match Zstd -b formatting :
 // 3# 12 files         : 211938580 ->  66981689 (3.164),  53.9 MB/s , 223.0 MB/s
 
-	char shortname[18];
-	strncpy(shortname,name,17);
-	shortname[17] = 0;
+    char shortname[18];
+    strncpy(shortname,name,17);
+    shortname[17] = 0;
 
-	if ( ratio < 10.0 )
-	{
-		fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.3f),%6.1f MB/s,%7.1f MB/s%c",
-			compressor_char,g_level,
-			shortname,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
-	}
-	else
-	{
-		fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.2f),%6.1f MB/s,%7.1f MB/s%c",
-			compressor_char,g_level,
-			shortname,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
-	}
+    if ( ratio < 10.0 )
+    {
+        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.3f),%6.1f MB/s,%7.1f MB/s%c",
+            compressor_char,g_level,
+            shortname,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
+    }
+    else
+    {
+        fprintf(fp,"%c%2d %-17s: %9" U64_FMT " -> %9" U64_FMT " (%5.2f),%6.1f MB/s,%7.1f MB/s%c",
+            compressor_char,g_level,
+            shortname,raw_bytes,comp_bytes,ratio,enc_MBs,dec_MBs,eol);
+    }
 }
 
 char g_benchmark_filename[24];
-	
+
 bool benchmark(const char * fullfilename,U64 infilesize)
 {
-	// make filepart of filename
-	const char * pname = fullfilename + strlen(fullfilename) - 1;
-	while( pname > fullfilename )
-	{
-		pname--;
-		if ( *pname == '/' || *pname == '\\' )
-		{
-			pname++;
-			break;
-		}
-	}
-	strncpy(g_benchmark_filename,pname,20);
-	g_benchmark_filename[19] = 0;
-	pname = g_benchmark_filename;
+    // make filepart of filename
+    const char * pname = fullfilename + strlen(fullfilename) - 1;
+    while( pname > fullfilename )
+    {
+        pname--;
+        if ( *pname == '/' || *pname == '\\' )
+        {
+            pname++;
+            break;
+        }
+    }
+    strncpy(g_benchmark_filename,pname,20);
+    g_benchmark_filename[19] = 0;
+    pname = g_benchmark_filename;
 
-	int in_size = (int) infilesize;
-	if ( (U64)in_size != infilesize )
-	{
-		fprintf(stderr, "OZIP: benchmark 32 bit file sizes only\n");
-		return false;
-	}
+    int in_size = (int) infilesize;
+    if ( (U64)in_size != infilesize )
+    {
+                "OZIP: benchmark 32 bit file sizes only\n");
+        return false;
+    }
 
-	// use OodleXMallocBig instead of ozip_malloc
-	// there seems to be a complicated occasional performance impact of the allocator used
-	// I just want to use the same thing that I use in Oodle (such as example_lz_chart) for consistency
-	void * in_buf = OodleXMallocBig( in_size );
-	void * comp_buf = OodleXMallocBig( (int) OodleLZ_GetCompressedBufferSizeNeeded(g_compressor,in_size) );
+    // use OodleXMallocBig instead of ozip_malloc
+    // there seems to be a complicated occasional performance impact of the allocator used
+    // I just want to use the same thing that I use in Oodle (such as example_lz_chart) for consistency
+    void * in_buf = OodleXMallocBig( in_size );
+    void * comp_buf = OodleXMallocBig( (int) OodleLZ_GetCompressedBufferSizeNeeded(g_compressor,in_size) );
 
-	if ( in_buf == NULL || comp_buf == NULL ) return false;
+    if ( in_buf == NULL || comp_buf == NULL ) return false;
 
-	size_t in_got = fread(in_buf,1,in_size,g_istream);
-	if ( in_got != (size_t)in_size )
-		return false;
-	
-	SINTa comp_size = -1;
-	double enc_time = 99999999.9;
+    size_t in_got = fread(in_buf,1,in_size,g_istream);
+    if ( in_got != (size_t)in_size )
+        return false;
 
-	{
-	int reps=0;
-	double total_seconds = 0;
-	double last_log_time = 0;
-	for(;;)
-	{
-		double dt = OodleX_GetSeconds();
-		
-		comp_size = OodleLZ_Compress(g_compressor, in_buf, in_size, comp_buf, (OodleLZ_CompressionLevel)g_level, &compressoptions, NULL, NULL, g_scratchmemory, g_scratchmemsize);
+    SINTa comp_size = -1;
+    double enc_time = 99999999.9;
 
-		dt = OodleX_GetSeconds() - dt;
-		
-		if ( comp_size == OODLELZ_FAILED )
-			return false;
-			
-		total_seconds += dt;
-		enc_time = min(enc_time,dt);
-		reps++;
+    {
+    int reps=0;
+    double total_seconds = 0;
+    double last_log_time = 0;
+    for(;;)
+    {
+        double dt = OodleX_GetSeconds();
 
-		if ( total_seconds - last_log_time > 1.0 )
-		{
-			last_log_time = total_seconds;
-			// this printing does hurt timing, even though it's outside the timer scope :
-			benchmark_print_line(stderr,pname,in_size,comp_size,enc_time,0.0,'\r');
-			fflush(stderr);
-		}
-		
-		if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
-			break;
-	}
-	}
-	
-	double dec_time = 99999999.9;
-	
-	{
-	int reps=0;
-	double total_seconds = 0;
-	double last_log_time = 0;
-	for(;;)
-	{
-		double dt = OodleX_GetSeconds();
-		
-		SINTa dec_got = OodleLZ_Decompress(comp_buf,comp_size,in_buf,in_size,
-			OodleLZ_FuzzSafe_Yes,OodleLZ_CheckCRC_No,OodleLZ_Verbosity_None,
-			NULL,0,NULL,NULL,g_scratchmemory, g_scratchmemsize,
-			OodleLZ_Decode_Unthreaded);
+        comp_size = OodleLZ_Compress(g_compressor, in_buf, in_size, comp_buf, (OodleLZ_CompressionLevel)g_level, &compressoptions, NULL, NULL, g_scratchmemory, g_scratchmemsize);
 
-		dt = OodleX_GetSeconds() - dt;
-		
-		//printf("\ndt : %.3f millis\n",dt*1000);
-		
-		if ( dec_got != in_size )
-			return false;
-		
-		total_seconds += dt;
-		dec_time = min(dec_time,dt);
-		reps++;
-		
-		if ( total_seconds - last_log_time > 1.0 )
-		{
-			last_log_time = total_seconds;
-			// this printing does hurt timing, even though it's outside the timer scope :
-			benchmark_print_line(stderr,pname,in_size,comp_size,enc_time,dec_time,'\r');
-			fflush(stderr);
-		}
-		
-		if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
-			break;
-	}
-	}
-	
-	OodleXFreeBig(in_buf);
-	OodleXFreeBig(comp_buf);
-	
-	g_benchmark_files ++;
-	g_benchmark_raw_bytes += in_size;
-	g_benchmark_comp_bytes += comp_size;
-	g_benchmark_enc_time += enc_time;
-	g_benchmark_dec_time += dec_time;
+        dt = OodleX_GetSeconds() - dt;
 
-	return true;
+        if ( comp_size == OODLELZ_FAILED )
+            return false;
+
+        total_seconds += dt;
+        enc_time = min(enc_time,dt);
+        reps++;
+
+        if ( total_seconds - last_log_time > 1.0 )
+        {
+            last_log_time = total_seconds;
+            // this printing does hurt timing, even though it's outside the timer scope :
+            benchmark_print_line(stderr,pname,in_size,comp_size,enc_time,0.0,'\r');
+            fflush(stderr);
+        }
+
+        if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
+            break;
+    }
+    }
+
+    double dec_time = 99999999.9;
+
+    {
+    int reps=0;
+    double total_seconds = 0;
+    double last_log_time = 0;
+    for(;;)
+    {
+        double dt = OodleX_GetSeconds();
+
+        SINTa dec_got = OodleLZ_Decompress(comp_buf,comp_size,in_buf,in_size,
+            OodleLZ_FuzzSafe_Yes,OodleLZ_CheckCRC_No,OodleLZ_Verbosity_None,
+            NULL,0,NULL,NULL,g_scratchmemory, g_scratchmemsize,
+            OodleLZ_Decode_Unthreaded);
+
+        dt = OodleX_GetSeconds() - dt;
+
+        //printf("\ndt : %.3f millis\n",dt*1000);
+
+        if ( dec_got != in_size )
+            return false;
+
+        total_seconds += dt;
+        dec_time = min(dec_time,dt);
+        reps++;
+
+        if ( total_seconds - last_log_time > 1.0 )
+        {
+            last_log_time = total_seconds;
+            // this printing does hurt timing, even though it's outside the timer scope :
+            benchmark_print_line(stderr,pname,in_size,comp_size,enc_time,dec_time,'\r');
+            fflush(stderr);
+        }
+
+        if ( reps >= c_benchmark_min_reps && total_seconds >= c_benchmark_min_time )
+            break;
+    }
+    }
+
+    OodleXFreeBig(in_buf);
+    OodleXFreeBig(comp_buf);
+
+    g_benchmark_files ++;
+    g_benchmark_raw_bytes += in_size;
+    g_benchmark_comp_bytes += comp_size;
+    g_benchmark_enc_time += enc_time;
+    g_benchmark_dec_time += dec_time;
+
+    return true;
 }
 
 void benchmark_finish()
 {
-	if ( g_benchmark_files == 0 || g_benchmark_raw_bytes == 0 )
-	{
-		printf("benchmark: no files!\n");
-		return;
-	}
-	
-	if ( g_benchmark_files == 1 )
-	{
-		// stdout or stderr ?
-		// reuse g_benchmark_filename made by the one benchmark run
-		benchmark_print_line(stdout,g_benchmark_filename,g_benchmark_raw_bytes,g_benchmark_comp_bytes,g_benchmark_enc_time,g_benchmark_dec_time,'\n');
-	}
-	else
-	{
-		char num_files_string[80];
-		sprintf(num_files_string,"%d files",g_benchmark_files);
+    if ( g_benchmark_files == 0 || g_benchmark_raw_bytes == 0 )
+    {
+        printf("benchmark: no files!\n");
+        return;
+    }
 
-		// stdout or stderr ?
-		benchmark_print_line(stdout,num_files_string,g_benchmark_raw_bytes,g_benchmark_comp_bytes,g_benchmark_enc_time,g_benchmark_dec_time,'\n');
-	}
+    if ( g_benchmark_files == 1 )
+    {
+        // stdout or stderr ?
+        // reuse g_benchmark_filename made by the one benchmark run
+        benchmark_print_line(stdout,g_benchmark_filename,g_benchmark_raw_bytes,g_benchmark_comp_bytes,g_benchmark_enc_time,g_benchmark_dec_time,'\n');
+    }
+    else
+    {
+        char num_files_string[80];
+        sprintf(num_files_string,"%d files",g_benchmark_files);
+
+        // stdout or stderr ?
+        benchmark_print_line(stdout,num_files_string,g_benchmark_raw_bytes,g_benchmark_comp_bytes,g_benchmark_enc_time,g_benchmark_dec_time,'\n');
+    }
 }
 
 //Handles potential filename argument
@@ -1934,16 +1942,16 @@ bool handle_file(char * infilecandidate)
 
     //instream is set
     g_istream = infilestream;
-    
-	if ( g_benchmark_mode )
-	{
-		success = benchmark(g_infilename,infilesize);
-	}
+
+    if ( g_benchmark_mode )
+    {
+        success = benchmark(g_infilename,infilesize);
+    }
     else if (g_outputstd)
     {
         g_ostream = stdout;
-        
-        success = handle_p2p(infilesize);   
+
+        success = handle_p2p(infilesize);
     }
     else
     {
@@ -1990,16 +1998,16 @@ bool handle_file(char * infilecandidate)
 
                 }
             }
-            
+
             if (g_ostream)
-			{
-				fclose(g_ostream); g_ostream = NULL;
-			}
+            {
+                fclose(g_ostream); g_ostream = NULL;
+            }
             if (g_istream)
-			{
-				fclose(g_istream); g_istream = NULL;
-			}
-                
+            {
+                fclose(g_istream); g_istream = NULL;
+            }
+
             if (!success)
             {
                 if (remove(g_outfilename) != 0)
@@ -2008,7 +2016,7 @@ bool handle_file(char * infilecandidate)
                 }
             }
             else
-            {                        
+            {
 #if defined (PLATFORM_UNIX) || defined (PLATFORM_MAC)
                 struct stat info;
                 int status = o_stat(g_infilename, &info);
@@ -2017,22 +2025,22 @@ bool handle_file(char * infilecandidate)
                     chmod(g_outfilename, info.st_mode);
                     chown(g_outfilename, info.st_uid, info.st_gid);
                 }
-#endif                  
+#endif
                 if (!g_keeporiginal)
                 {
                     remove(g_infilename);    //could check return values, and warn?
                 }
             }
         }
-        
+
     }
     if (g_istream && g_istream!=stdin)
     {
-		fclose(g_istream); g_istream = NULL;
+        fclose(g_istream); g_istream = NULL;
     }
     if (g_ostream && g_ostream!=stdout)
     {
-		fclose(g_ostream); g_ostream = NULL;
+        fclose(g_ostream); g_ostream = NULL;
     }
     return success;
 }
@@ -2082,7 +2090,7 @@ bool iterate_on_file_args(int argc, char * argv[])
                         if (p)
                         {
                             p[1] = 0;
-                            strncat(filetoprocess.x, filedata.cFileName,MAX_PATH - strlen(filetoprocess.x)); 
+                            strncat(filetoprocess.x, filedata.cFileName,MAX_PATH - strlen(filetoprocess.x));
                         }
                         else
                         {
@@ -2105,31 +2113,31 @@ bool iterate_on_file_args(int argc, char * argv[])
 #else
             handle_file(argv[i]);
 #endif
-        }       
+        }
     }
     return didsomething;
 }
 
 //If no nonopt(-) args attempts to comp/decome from stdin to stdout.
-int main(int argc, char * argv[]) 
+int main(int argc, char * argv[])
 {
-    
+
 #ifdef LOGGING_ENABLED
     logfile = fopen(logfilename, "w");
 #endif
     logprintf("OZIP ver:%s built: %s @ %s\n", OZIP_VER, __DATE__, __TIME__);
 
-	// get OodleX threads for Jobify :
-	//	@@ need only 2 worker threads, could make less
-	OodleX_Init_Default(OODLE_HEADER_VERSION,
-		OodleX_Init_GetDefaults_DebugSystems_No,
-		OodleX_Init_GetDefaults_Threads_Yes);
+    // get OodleX threads for Jobify :
+    //    @@ need only 2 worker threads, could make less
+    OodleX_Init_Default(OODLE_HEADER_VERSION,
+        OodleX_Init_GetDefaults_DebugSystems_No,
+        OodleX_Init_GetDefaults_Threads_Yes);
 
-	// OodleX_Init automatically installs itself to Oodle Core Job plugins
-	//	Oodle Core LZ compress default option is jobify yes
+    // OodleX_Init automatically installs itself to Oodle Core Job plugins
+    //    Oodle Core LZ compress default option is jobify yes
 
     register_signal_handlers();
-    
+
     //set opts
     parse_opt(argc, argv);
 
@@ -2143,11 +2151,11 @@ int main(int argc, char * argv[])
         //operate on file args
         bool didsomething = iterate_on_file_args(argc, argv);
 
-		if ( g_benchmark_mode )
-		{
-			benchmark_finish();
-			didsomething = true;
-		}
+        if ( g_benchmark_mode )
+        {
+            benchmark_finish();
+            didsomething = true;
+        }
 
         if (!didsomething)   //didn't operate on file arg, default to stdin to stdout mode.
         {
@@ -2158,12 +2166,12 @@ int main(int argc, char * argv[])
                 if (!g_bequiet) fprintf(stderr, "OZIP: For help, type: ozip -h\n");
             }
         }
-        
+
         free(g_scratchmemory); g_scratchmemory = NULL;
     }
-    
+
     OodleX_Shutdown();
-    
+
     return 0;
 }
 
