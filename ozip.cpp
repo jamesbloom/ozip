@@ -295,8 +295,8 @@ void print_oodle_help()
                 "ozip is public domain and here: https://github.com/jamesbloom/ozip/\n"
                 "%s\n"
                 "use of Oodle requires an Oodle license.\n"
-                , OodleVersion
                 ,(int)OodleLZ_CompressionLevel_Min, (int)OodleLZ_CompressionLevel_Max
+                , OodleVersion
                 , RADCOPYRIGHT);
     }
 }
